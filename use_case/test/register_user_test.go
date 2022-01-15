@@ -33,15 +33,14 @@ func TestRegisterUserUseCase(t *testing.T) {
 	userRepository.Mock.On("CheckEmailAvailability", ctx, user.Email).Return(nil)
 
 	mockGenerateID := userRepository.Mock.On("GenerateID", ctx).Return("random-id", nil)
-	userID := mockGenerateID.ReturnArguments.Get(0).(string)
-	user.ID = userID
+	user.ID = mockGenerateID.ReturnArguments.Get(0).(string)
 
 	mockHashPassword := userRepository.Mock.On("HashPassword", ctx, user.Password).Return("H@5h3dP4$$w012d", nil)
 	hashedPass := mockHashPassword.ReturnArguments.Get(0).(string)
 	user.Password = hashedPass
 
 	mockRegisterUser := userRepository.Mock.On("RegisterUser", ctx, user).Return(&model.User{
-		ID:        userID,
+		ID:        user.ID,
 		Email:     user.Email,
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
