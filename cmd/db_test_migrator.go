@@ -7,7 +7,7 @@ import (
 )
 
 func MigrateTable() {
-	db, err := database.NewDB("ikomers_test")
+	db, err := database.NewDB()
 	if err != nil {
 		panic(err)
 	}

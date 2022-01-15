@@ -8,7 +8,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func NewDB(dbName string) (*gorm.DB, error) {
+func NewDB() (*gorm.DB, error) {
 	conf := config.GetConfig()
 
 	// refer https://github.com/go-sql-driver/mysql#dsn-data-source-name for details

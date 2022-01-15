@@ -15,7 +15,10 @@ type Config struct {
 }
 
 func GetConfig() *Config {
-	viper.SetConfigFile(".env")
+	viper.AddConfigPath(".")
+	viper.AddConfigPath("./../..")
+	viper.SetConfigName(".env")
+	viper.SetConfigType("env")
 
 	err := viper.ReadInConfig()
 	if err != nil {
