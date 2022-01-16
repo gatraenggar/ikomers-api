@@ -17,6 +17,7 @@ type Config struct {
 func GetConfig() *Config {
 	viper.AddConfigPath(".")
 	viper.AddConfigPath("./../..")
+	viper.AddConfigPath("./../../..")
 	viper.SetConfigName(".env")
 	viper.SetConfigType("env")
 

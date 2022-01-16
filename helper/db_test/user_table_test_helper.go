@@ -1,4 +1,4 @@
-package helper
+package db_test
 
 import (
 	"ikomers-be/database"

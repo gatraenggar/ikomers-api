@@ -5,10 +5,10 @@ import (
 )
 
 type Security struct {
-	Manager SecurityRepository
+	Manager SecurityManager
 }
 
-type SecurityRepository interface {
+type SecurityManager interface {
 	GenerateID(ctx context.Context) (string, error)
 	HashPassword(ctx context.Context, password string) (string, error)
 }
