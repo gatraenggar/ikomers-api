@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	github.com/bketelsen/crypt v0.0.4 // indirect
+	github.com/google/uuid v1.3.0 // indirect
 	github.com/graphql-go/graphql v0.8.0 // indirect
 	github.com/smartystreets/goconvey v1.6.4 // indirect
 	github.com/spf13/viper v1.10.1 // indirect
