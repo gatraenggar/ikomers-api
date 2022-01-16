@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"ikomers-be/http"
 	"os"
 )
 
@@ -22,6 +23,7 @@ func InitServer() {
 
 	case "server":
 		fmt.Println("Running the server...")
+		http.InitHTTPServer()
 
 	default:
 		fmt.Println("You seems to miss-typed the command...")
