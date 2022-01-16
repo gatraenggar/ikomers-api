@@ -3,6 +3,7 @@ package use_case
 import (
 	"context"
 	"ikomers-be/model"
+	helperModel "ikomers-be/model/helper"
 )
 
 type RegisterUserRequest struct {
@@ -20,12 +21,14 @@ type RegisterUserResponse struct {
 }
 
 type RegisterUser struct {
-	UserRepository model.UserRepository
+	UserRepository     model.UserRepository
+	SecurityRepository helperModel.SecurityRepository
 }
 
-func NewRegisterUserUsecase(u model.UserRepository) *RegisterUser {
+func NewRegisterUserUsecase(u model.UserRepository, s helperModel.SecurityRepository) *RegisterUser {
 	return &RegisterUser{
-		UserRepository: u,
+		UserRepository:     u,
+		SecurityRepository: s,
 	}
 }
 
@@ -46,13 +49,13 @@ func (r *RegisterUser) Execute(ctx context.Context, req *RegisterUserRequest) (*
 		return nil, err
 	}
 
-	userID, err := r.UserRepository.GenerateID(ctx)
+	userID, err := r.SecurityRepository.GenerateID(ctx)
 	if err != nil {
 		return nil, err
 	}
 	user.ID = userID
 
-	hashedPass, err := r.UserRepository.HashPassword(ctx, user.Password)
+	hashedPass, err := r.SecurityRepository.HashPassword(ctx, user.Password)
 	if err != nil {
 		return nil, err
 	}

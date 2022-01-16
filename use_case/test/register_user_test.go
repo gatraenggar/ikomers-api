@@ -12,6 +12,7 @@ import (
 )
 
 var userRepository = &mock.UserRepositoryMock{Mock: testifyMock.Mock{}}
+var securityRepository = &mock.SecurityRepositoryMock{Mock: testifyMock.Mock{}}
 
 func TestRegisterUserUseCase(t *testing.T) {
 	req := &use_case.RegisterUserRequest{
@@ -32,10 +33,10 @@ func TestRegisterUserUseCase(t *testing.T) {
 
 	userRepository.Mock.On("CheckEmailAvailability", ctx, user.Email).Return(nil)
 
-	mockGenerateID := userRepository.Mock.On("GenerateID", ctx).Return("random-id", nil)
+	mockGenerateID := securityRepository.Mock.On("GenerateID", ctx).Return("random-id", nil)
 	user.ID = mockGenerateID.ReturnArguments.Get(0).(string)
 
-	mockHashPassword := userRepository.Mock.On("HashPassword", ctx, user.Password).Return("H@5h3dP4$$w012d", nil)
+	mockHashPassword := securityRepository.Mock.On("HashPassword", ctx, user.Password).Return("H@5h3dP4$$w012d", nil)
 	hashedPass := mockHashPassword.ReturnArguments.Get(0).(string)
 	user.Password = hashedPass
 
@@ -52,12 +53,14 @@ func TestRegisterUserUseCase(t *testing.T) {
 		FirstName: mockRegisterUser.FirstName,
 		LastName:  mockRegisterUser.LastName,
 	}
-	actualRes, _ := use_case.NewRegisterUserUsecase(userRepository).Execute(ctx, req)
+
+	registerUserUseCase := use_case.NewRegisterUserUsecase(userRepository, securityRepository)
+	actualRes, _ := registerUserUseCase.Execute(ctx, req)
 
 	assert.NoError(t, validateFieldsErr, "valid fields should not throw error")
 	userRepository.Mock.AssertCalled(t, "CheckEmailAvailability", ctx, req.Email)
-	userRepository.Mock.AssertCalled(t, "GenerateID", ctx)
-	userRepository.Mock.AssertCalled(t, "HashPassword", ctx, req.Password)
+	securityRepository.Mock.AssertCalled(t, "GenerateID", ctx)
+	securityRepository.Mock.AssertCalled(t, "HashPassword", ctx, req.Password)
 	userRepository.Mock.AssertCalled(t, "RegisterUser", ctx, user)
 	assert.Equal(t, expectedRes, actualRes)
 }

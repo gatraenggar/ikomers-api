@@ -18,12 +18,6 @@ func NewMySqlUserRepo(gormDB *gorm.DB) model.UserRepository {
 	}
 }
 
-func (m *mySqlUserRepo) GenerateID(ctx context.Context) (string, error) { return "", nil }
-
-func (m *mySqlUserRepo) HashPassword(ctx context.Context, password string) (string, error) {
-	return "", nil
-}
-
 func (m *mySqlUserRepo) CheckEmailAvailability(ctx context.Context, email string) error {
 	var res model.User
 

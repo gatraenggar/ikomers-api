@@ -40,9 +40,6 @@ func (u *User) ValidateFields() error {
 }
 
 type UserRepository interface {
-	GenerateID(ctx context.Context) (string, error)
-	HashPassword(ctx context.Context, password string) (string, error)
-
 	CheckEmailAvailability(ctx context.Context, email string) error
 	RegisterUser(ctx context.Context, user *User) (*User, error)
 }
