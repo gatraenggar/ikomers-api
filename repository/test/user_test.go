@@ -2,7 +2,7 @@ package test
 
 import (
 	"context"
-	"ikomers-be/helper"
+	"ikomers-be/helper/db_test"
 	"ikomers-be/model"
 	"ikomers-be/model/mock"
 	"ikomers-be/repository"
@@ -15,7 +15,7 @@ import (
 var userRepository = &mock.UserRepositoryMock{Mock: testifyMock.Mock{}}
 
 func TestUserRepository(t *testing.T) {
-	tableHelper := helper.NewUserTableTestHelper()
+	tableHelper := db_test.NewUserTableTestHelper()
 
 	t.Run("check email availability", func(t *testing.T) {
 		ctx := context.Background()

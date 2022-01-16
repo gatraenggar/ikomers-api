@@ -21,14 +21,14 @@ type RegisterUserResponse struct {
 }
 
 type RegisterUser struct {
-	UserRepository     model.UserRepository
-	SecurityRepository helperModel.SecurityRepository
+	UserRepository  model.UserRepository
+	SecurityManager helperModel.SecurityManager
 }
 
-func NewRegisterUserUsecase(u model.UserRepository, s helperModel.SecurityRepository) *RegisterUser {
+func NewRegisterUserUsecase(u model.UserRepository, s helperModel.SecurityManager) *RegisterUser {
 	return &RegisterUser{
-		UserRepository:     u,
-		SecurityRepository: s,
+		UserRepository:  u,
+		SecurityManager: s,
 	}
 }
 
@@ -49,13 +49,13 @@ func (r *RegisterUser) Execute(ctx context.Context, req *RegisterUserRequest) (*
 		return nil, err
 	}
 
-	userID, err := r.SecurityRepository.GenerateID(ctx)
+	userID, err := r.SecurityManager.GenerateID(ctx)
 	if err != nil {
 		return nil, err
 	}
 	user.ID = userID
 
-	hashedPass, err := r.SecurityRepository.HashPassword(ctx, user.Password)
+	hashedPass, err := r.SecurityManager.HashPassword(ctx, user.Password)
 	if err != nil {
 		return nil, err
 	}
