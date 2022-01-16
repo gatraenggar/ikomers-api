@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"ikomers-be/model"
 
 	"gorm.io/gorm"
@@ -23,7 +24,16 @@ func (m *mySqlUserRepo) HashPassword(ctx context.Context, password string) (stri
 	return "", nil
 }
 
-func (m *mySqlUserRepo) CheckEmailAvailability(ctx context.Context, email string) error { return nil }
+func (m *mySqlUserRepo) CheckEmailAvailability(ctx context.Context, email string) error {
+	var res model.User
+
+	m.DB.Select("email").Where(&model.User{Email: email}).Find(&res)
+	if res.Email == email {
+		return errors.New("email is not available")
+	}
+
+	return nil
+}
 
 func (m *mySqlUserRepo) RegisterUser(ctx context.Context, user *model.User) (*model.User, error) {
 	res := m.DB.Create(user)

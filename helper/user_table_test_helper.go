@@ -12,6 +12,13 @@ type userTableTestHelper struct {
 	DB *gorm.DB
 }
 
+func (t *userTableTestHelper) AddUser(u *model.User) {
+	res := t.DB.Create(u)
+	if res.Error != nil {
+		log.Fatalf(res.Error.Error())
+	}
+}
+
 func (t *userTableTestHelper) GetUserByID(u *model.User, userID string) ([]model.User, error) {
 	res := t.DB.First(u, "id = ?", userID)
 	if res.Error != nil {

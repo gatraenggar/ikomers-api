@@ -16,7 +16,24 @@ var userRepository = &mock.UserRepositoryMock{Mock: testifyMock.Mock{}}
 
 func TestUserRepository(t *testing.T) {
 	tableHelper := helper.NewUserTableTestHelper()
-	defer tableHelper.CleanTable()
+
+	t.Run("check email availability", func(t *testing.T) {
+		ctx := context.Background()
+		user := &model.User{
+			Email:     "johndoe@email.com",
+			FirstName: "John",
+			LastName:  "Doe",
+			Password:  "5h3dP4$$w012d",
+		}
+
+		tableHelper.AddUser(user)
+
+		mysqlRepo := repository.NewMySqlUserRepo(tableHelper.DB)
+		err := mysqlRepo.CheckEmailAvailability(ctx, user.Email)
+
+		assert.EqualError(t, err, "email is not available")
+		tableHelper.CleanTable()
+	})
 
 	t.Run("register user method", func(t *testing.T) {
 		ctx := context.Background()
@@ -43,5 +60,7 @@ func TestUserRepository(t *testing.T) {
 		assert.Equal(t, res.FirstName, user.FirstName)
 		assert.Equal(t, res.LastName, user.LastName)
 		assert.Equal(t, res.LastName, user.LastName)
+
+		tableHelper.CleanTable()
 	})
 }
