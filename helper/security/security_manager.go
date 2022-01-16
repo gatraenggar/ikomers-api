@@ -6,6 +6,7 @@ import (
 	"ikomers-be/model/helper"
 
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
@@ -29,5 +30,12 @@ func (m *securityManager) GenerateID(ctx context.Context) (string, error) {
 }
 
 func (m *securityManager) HashPassword(ctx context.Context, password string) (string, error) {
-	return "", nil
+	passBytes := []byte(password)
+
+	hashed, err := bcrypt.GenerateFromPassword(passBytes, bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+
+	return string(hashed), nil
 }

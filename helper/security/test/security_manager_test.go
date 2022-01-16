@@ -25,4 +25,15 @@ func TestSecurityManager(t *testing.T) {
 		assert.Len(t, id2, 36)
 		assert.NotEqual(t, id1, id2)
 	})
+
+	t.Run("hash password", func(t *testing.T) {
+		ctx := context.Background()
+		password := "SomePasswordHere"
+
+		secManager := security.NewSecurityManager(tableHelper.DB)
+		hashed, err := secManager.HashPassword(ctx, password)
+
+		assert.NoError(t, err)
+		assert.NotEqual(t, hashed, password)
+	})
 }
