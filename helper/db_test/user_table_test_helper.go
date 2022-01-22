@@ -41,6 +41,7 @@ func (t *userTableTestHelper) GetUserByID(u *model.User, userID string) ([]model
 			&user.FirstName,
 			&user.LastName,
 			&user.Password,
+			&user.Type,
 		); err != nil {
 			return nil, err
 		}
@@ -49,6 +50,7 @@ func (t *userTableTestHelper) GetUserByID(u *model.User, userID string) ([]model
 			Email:     user.Email,
 			FirstName: user.FirstName,
 			LastName:  user.LastName,
+			Type:      user.Type,
 		})
 	}
 	if err := rows.Err(); err != nil {

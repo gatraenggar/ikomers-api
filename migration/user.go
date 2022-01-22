@@ -8,6 +8,7 @@ type User struct {
 	FirstName string  `gorm:"size:15"`
 	LastName  string  `gorm:"size:15"`
 	Password  string
+	Type      byte
 }
 
 func MigrateUserTable(m gorm.Migrator) {
