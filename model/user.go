@@ -6,12 +6,20 @@ import (
 	"net/mail"
 )
 
+type UserType uint
+
+const (
+	EndUser UserType = iota + 1
+	Admin
+)
+
 type User struct {
 	ID        string
 	Email     string
 	FirstName string
 	LastName  string
 	Password  string
+	Type      UserType
 }
 
 func (u *User) ValidateFields() error {
@@ -34,6 +42,10 @@ func (u *User) ValidateFields() error {
 
 	if len(u.Password) < 8 || len(u.Password) > 20 {
 		return errors.New("password length should be 8-20")
+	}
+
+	if u.Type != EndUser && u.Type != Admin {
+		return errors.New("type should be a user type")
 	}
 
 	return nil
