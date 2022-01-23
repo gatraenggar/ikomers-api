@@ -20,7 +20,7 @@ func TestRegisterUserUseCase(t *testing.T) {
 		FirstName: "John",
 		LastName:  "Doe",
 		Password:  "SomePasswordHere",
-		Type:      model.EndUser,
+		Type:      1,
 	}
 
 	ctx := context.Background()
@@ -29,7 +29,7 @@ func TestRegisterUserUseCase(t *testing.T) {
 		FirstName: req.FirstName,
 		LastName:  req.LastName,
 		Password:  req.Password,
-		Type:      req.Type,
+		Type:      model.UserType(req.Type),
 	}
 	validateFieldsErr := user.ValidateFields()
 
@@ -47,7 +47,7 @@ func TestRegisterUserUseCase(t *testing.T) {
 		Email:     user.Email,
 		FirstName: user.FirstName,
 		LastName:  user.LastName,
-		Type:      req.Type,
+		Type:      user.Type,
 	}, nil).ReturnArguments.Get(0).(*model.User)
 
 	expectedRes := &use_case.RegisterUserResponse{
@@ -55,7 +55,7 @@ func TestRegisterUserUseCase(t *testing.T) {
 		Email:     mockRegisterUser.Email,
 		FirstName: mockRegisterUser.FirstName,
 		LastName:  mockRegisterUser.LastName,
-		Type:      mockRegisterUser.Type,
+		Type:      int(mockRegisterUser.Type),
 	}
 
 	registerUserUseCase := use_case.NewRegisterUserUsecase(userRepository, securityManager)
