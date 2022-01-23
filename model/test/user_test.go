@@ -18,6 +18,7 @@ func TestValidateFields(t *testing.T) {
 	user.FirstName = "John"
 	user.LastName = "Doe"
 	user.Password = "SomePasswordHere"
+	user.Type = model.Admin
 
 	t.Run("valid fields", func(t *testing.T) {
 		assert.NoError(t, user.ValidateFields(), "valid fields should not throw error")
@@ -45,5 +46,15 @@ func TestValidateFields(t *testing.T) {
 		user.Password = "\\X_X/"
 		assert.EqualError(t, user.ValidateFields(), "password length should be 8-20")
 		user.Password = "SomePasswordHere"
+	})
+
+	t.Run("type should be a user type", func(t *testing.T) {
+		user.Type = 0
+		assert.EqualError(t, user.ValidateFields(), "type should be a user type")
+	})
+
+	t.Run("correct type should not throw error", func(t *testing.T) {
+		user.Type = model.EndUser
+		assert.NoError(t, user.ValidateFields(), "correct type should not throw error")
 	})
 }

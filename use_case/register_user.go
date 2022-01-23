@@ -11,6 +11,7 @@ type RegisterUserRequest struct {
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
 	Password  string `json:"password"`
+	Type      int    `json:"type"`
 }
 
 type RegisterUserResponse struct {
@@ -18,6 +19,7 @@ type RegisterUserResponse struct {
 	Email     string `json:"email"`
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
+	Type      int    `json:"type"`
 }
 
 type RegisterUser struct {
@@ -43,6 +45,7 @@ func (r *RegisterUser) Execute(ctx context.Context, req *RegisterUserRequest) (*
 		FirstName: req.FirstName,
 		LastName:  req.LastName,
 		Password:  req.Password,
+		Type:      model.UserType(req.Type),
 	}
 	err = user.ValidateFields()
 	if err != nil {
@@ -71,5 +74,6 @@ func (r *RegisterUser) Execute(ctx context.Context, req *RegisterUserRequest) (*
 		Email:     res.Email,
 		FirstName: res.FirstName,
 		LastName:  res.LastName,
+		Type:      int(res.Type),
 	}, nil
 }

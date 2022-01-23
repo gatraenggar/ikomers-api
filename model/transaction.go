@@ -2,7 +2,7 @@ package model
 
 import "time"
 
-type TransactionStatus int
+type TransactionStatus uint
 
 const (
 	Waiting TransactionStatus = iota + 1

@@ -27,6 +27,9 @@ func NewRegisterUserField(mysqlUserRepository model.UserRepository, securityMana
 			"last_name": &graphql.ArgumentConfig{
 				Type: graphql.NewNonNull(graphql.String),
 			},
+			"type": &graphql.ArgumentConfig{
+				Type: graphql.NewNonNull(graphql.Int),
+			},
 		},
 		Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 			ctx := context.Background()
@@ -35,6 +38,7 @@ func NewRegisterUserField(mysqlUserRepository model.UserRepository, securityMana
 				Password:  p.Args["password"].(string),
 				FirstName: p.Args["first_name"].(string),
 				LastName:  p.Args["last_name"].(string),
+				Type:      p.Args["type"].(int),
 			}
 
 			registerUserUseCase := use_case.NewRegisterUserUsecase(mysqlUserRepository, securityManager)
