@@ -15,22 +15,32 @@ type RegisterUserRequest struct {
 }
 
 type RegisterUserResponse struct {
-	ID        string `json:"id"`
-	Email     string `json:"email"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	Type      int    `json:"type"`
+	ID        string     `json:"id"`
+	Email     string     `json:"email"`
+	FirstName string     `json:"first_name"`
+	LastName  string     `json:"last_name"`
+	Type      int        `json:"type"`
+	AuthToken model.Auth `json:"auth_token"`
 }
 
 type RegisterUser struct {
+	AuthRepository  model.AuthRepository
 	UserRepository  model.UserRepository
 	SecurityManager helperModel.SecurityManager
+	TokenManager    helperModel.TokenManager
 }
 
-func NewRegisterUserUsecase(u model.UserRepository, s helperModel.SecurityManager) *RegisterUser {
+func NewRegisterUserUsecase(
+	a model.AuthRepository,
+	u model.UserRepository,
+	s helperModel.SecurityManager,
+	t helperModel.TokenManager,
+) *RegisterUser {
 	return &RegisterUser{
+		AuthRepository:  a,
 		UserRepository:  u,
 		SecurityManager: s,
+		TokenManager:    t,
 	}
 }
 
@@ -64,16 +74,32 @@ func (r *RegisterUser) Execute(ctx context.Context, req *RegisterUserRequest) (*
 	}
 	user.Password = hashedPass
 
-	res, err := r.UserRepository.RegisterUser(ctx, user)
+	registeredUser, err := r.UserRepository.RegisterUser(ctx, user)
 	if err != nil {
 		return nil, err
 	}
 
+	accessToken, err := r.TokenManager.GenerateAccessToken(ctx, *user)
+	if err != nil {
+		return nil, err
+	}
+
+	refreshToken, err := r.TokenManager.GenerateRefreshToken(ctx, *user)
+	if err != nil {
+		return nil, err
+	}
+
+	r.AuthRepository.AddRefreshToken(ctx, refreshToken)
+
 	return &RegisterUserResponse{
-		ID:        res.ID,
-		Email:     res.Email,
-		FirstName: res.FirstName,
-		LastName:  res.LastName,
-		Type:      int(res.Type),
+		ID:        registeredUser.ID,
+		Email:     registeredUser.Email,
+		FirstName: registeredUser.FirstName,
+		LastName:  registeredUser.LastName,
+		Type:      int(registeredUser.Type),
+		AuthToken: model.Auth{
+			AccessToken:  accessToken,
+			RefreshToken: refreshToken,
+		},
 	}, nil
 }
