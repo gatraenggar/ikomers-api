@@ -11,8 +11,10 @@ import (
 	testifyMock "github.com/stretchr/testify/mock"
 )
 
+var authRepository = &mock.AuthRepositoryMock{Mock: testifyMock.Mock{}}
 var userRepository = &mock.UserRepositoryMock{Mock: testifyMock.Mock{}}
 var securityManager = &mock.SecurityManagerMock{Mock: testifyMock.Mock{}}
+var tokenManager = &mock.TokenManagerMock{Mock: testifyMock.Mock{}}
 
 func TestRegisterUserUseCase(t *testing.T) {
 	req := &use_case.RegisterUserRequest{
@@ -50,21 +52,38 @@ func TestRegisterUserUseCase(t *testing.T) {
 		Type:      user.Type,
 	}, nil).ReturnArguments.Get(0).(*model.User)
 
+	mockGenerateAccessToken := tokenManager.Mock.On("GenerateAccessToken", ctx, *user).Return(
+		"mockAccessTokenHere", nil,
+	).ReturnArguments.Get(0).(string)
+
+	mockGenerateRefreshToken := tokenManager.Mock.On("GenerateRefreshToken", ctx, *user).Return(
+		"mockRefreshTokenHere", nil,
+	).ReturnArguments.Get(0).(string)
+
+	authRepository.Mock.On("AddRefreshToken", ctx, mockGenerateRefreshToken).Return(nil)
+
+	registerUserUseCase := use_case.NewRegisterUserUsecase(authRepository, userRepository, securityManager, tokenManager)
+
+	actualRes, _ := registerUserUseCase.Execute(ctx, req)
 	expectedRes := &use_case.RegisterUserResponse{
 		ID:        mockRegisterUser.ID,
 		Email:     mockRegisterUser.Email,
 		FirstName: mockRegisterUser.FirstName,
 		LastName:  mockRegisterUser.LastName,
 		Type:      int(mockRegisterUser.Type),
+		AuthToken: model.Auth{
+			AccessToken:  mockGenerateAccessToken,
+			RefreshToken: mockGenerateRefreshToken,
+		},
 	}
-
-	registerUserUseCase := use_case.NewRegisterUserUsecase(userRepository, securityManager)
-	actualRes, _ := registerUserUseCase.Execute(ctx, req)
 
 	assert.NoError(t, validateFieldsErr, "valid fields should not throw error")
 	userRepository.Mock.AssertCalled(t, "CheckEmailAvailability", ctx, req.Email)
 	securityManager.Mock.AssertCalled(t, "GenerateID", ctx)
 	securityManager.Mock.AssertCalled(t, "HashPassword", ctx, req.Password)
 	userRepository.Mock.AssertCalled(t, "RegisterUser", ctx, user)
+	tokenManager.Mock.AssertCalled(t, "GenerateAccessToken", ctx, *user)
+	tokenManager.Mock.AssertCalled(t, "GenerateRefreshToken", ctx, *user)
+	authRepository.Mock.AssertCalled(t, "AddRefreshToken", ctx, mockGenerateRefreshToken)
 	assert.Equal(t, expectedRes, actualRes)
 }

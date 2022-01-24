@@ -1,6 +1,4 @@
-package migration
-
-import "gorm.io/gorm"
+package database
 
 type User struct {
 	ID        string  `gorm:"primaryKey"`
@@ -9,8 +7,4 @@ type User struct {
 	LastName  string  `gorm:"size:15"`
 	Password  string
 	Type      byte
-}
-
-func MigrateUserTable(m gorm.Migrator) {
-	m.CreateTable(User{})
 }
