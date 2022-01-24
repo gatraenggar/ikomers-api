@@ -10,7 +10,12 @@ import (
 	"github.com/graphql-go/graphql"
 )
 
-func NewRegisterUserField(mysqlUserRepository model.UserRepository, securityManager helper.SecurityManager) *graphql.Field {
+func NewRegisterUserField(
+	mysqlAuthRepository model.AuthRepository,
+	mysqlUserRepository model.UserRepository,
+	securityManager helper.SecurityManager,
+	tokenManager helper.TokenManager,
+) *graphql.Field {
 	return &graphql.Field{
 		Type:        schema.UserType,
 		Description: "Register new user",
@@ -41,7 +46,7 @@ func NewRegisterUserField(mysqlUserRepository model.UserRepository, securityMana
 				Type:      p.Args["type"].(int),
 			}
 
-			registerUserUseCase := use_case.NewRegisterUserUsecase(mysqlUserRepository, securityManager)
+			registerUserUseCase := use_case.NewRegisterUserUsecase(mysqlAuthRepository, mysqlUserRepository, securityManager, tokenManager)
 			res, err := registerUserUseCase.Execute(ctx, &req)
 			if err != nil {
 				return nil, err
