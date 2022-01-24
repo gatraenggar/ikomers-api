@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"ikomers-be/database"
-	"ikomers-be/migration"
 )
 
 func MigrateTable() {
@@ -12,7 +11,7 @@ func MigrateTable() {
 		panic(err)
 	}
 
-	migration.MigrateUserTable(db.Migrator())
+	database.MigrateTable(db.Migrator())
 
 	fmt.Println("Migrate success!")
 }

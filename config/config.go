@@ -12,6 +12,9 @@ type Config struct {
 	DbTestPass string
 	DbTestPort string
 	DbTestName string
+
+	AccessTokenKey  string
+	RefreshTokenKey string
 }
 
 func GetConfig() *Config {
@@ -52,11 +55,23 @@ func GetConfig() *Config {
 		log.Fatalf("Invalid type assertion")
 	}
 
+	accessTokenKey, ok := viper.Get("ACCESS_TOKEN_KEY").(string)
+	if !ok {
+		log.Fatalf("Invalid type assertion")
+	}
+
+	refreshTokenKey, ok := viper.Get("REFRESH_TOKEN_KEY").(string)
+	if !ok {
+		log.Fatalf("Invalid type assertion")
+	}
+
 	return &Config{
-		DbTestHost: dbTestHost,
-		DbTestPort: dbTestPort,
-		DbTestUser: dbTestUser,
-		DbTestPass: dbTestPass,
-		DbTestName: dbTestName,
+		DbTestHost:      dbTestHost,
+		DbTestPort:      dbTestPort,
+		DbTestUser:      dbTestUser,
+		DbTestPass:      dbTestPass,
+		DbTestName:      dbTestName,
+		AccessTokenKey:  accessTokenKey,
+		RefreshTokenKey: refreshTokenKey,
 	}
 }
