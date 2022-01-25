@@ -11,4 +11,5 @@ type Security struct {
 type SecurityManager interface {
 	GenerateID(ctx context.Context) (string, error)
 	HashPassword(ctx context.Context, password string) (string, error)
+	CompareHashAndPassword(ctx context.Context, password string, hashed string) error
 }
