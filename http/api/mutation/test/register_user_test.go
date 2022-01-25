@@ -17,7 +17,7 @@ func TestRegisterUserMutation(t *testing.T) {
 	lastName := "Doe"
 	userType := 1
 
-	// mutationReq returns:
+	// register user request:
 	// `
 	// 	mutation{
 	// 		registerUser(

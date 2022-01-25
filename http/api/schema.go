@@ -37,6 +37,7 @@ var mutationType = graphql.NewObject(graphql.ObjectConfig{
 			http://localhost:8080/graphql?query=mutation+_{registerUser(email:"johndoe@email.com",password:"somePasswordHere",first_name:"John",last_name:"Doe",){id,email,first_name,last_name}}
 		*/
 		"registerUser": mutation.NewRegisterUserField(mysqlAuthRepository, mysqlUserRepository, securityManager, tokenManager),
+		"login":        mutation.NewLoginField(mysqlAuthRepository, mysqlUserRepository, securityManager, tokenManager),
 	},
 })
 
