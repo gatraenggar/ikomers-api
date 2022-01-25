@@ -3,18 +3,11 @@ package test
 import (
 	"context"
 	"ikomers-be/model"
-	"ikomers-be/model/mock"
 	"ikomers-be/use_case"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	testifyMock "github.com/stretchr/testify/mock"
 )
-
-var authRepository = &mock.AuthRepositoryMock{Mock: testifyMock.Mock{}}
-var userRepository = &mock.UserRepositoryMock{Mock: testifyMock.Mock{}}
-var securityManager = &mock.SecurityManagerMock{Mock: testifyMock.Mock{}}
-var tokenManager = &mock.TokenManagerMock{Mock: testifyMock.Mock{}}
 
 func TestRegisterUserUseCase(t *testing.T) {
 	req := &use_case.RegisterUserRequest{
@@ -35,16 +28,16 @@ func TestRegisterUserUseCase(t *testing.T) {
 	}
 	validateFieldsErr := user.ValidateFields()
 
-	userRepository.Mock.On("CheckEmailAvailability", ctx, user.Email).Return(nil)
+	UserRepository.Mock.On("CheckEmailAvailability", ctx, user.Email).Return(nil)
 
-	mockGenerateID := securityManager.Mock.On("GenerateID", ctx).Return("random-id", nil)
+	mockGenerateID := SecurityManager.Mock.On("GenerateID", ctx).Return("random-id", nil)
 	user.ID = mockGenerateID.ReturnArguments.Get(0).(string)
 
-	mockHashPassword := securityManager.Mock.On("HashPassword", ctx, user.Password).Return("H@5h3dP4$$w012d", nil)
+	mockHashPassword := SecurityManager.Mock.On("HashPassword", ctx, user.Password).Return("H@5h3dP4$$w012d", nil)
 	hashedPass := mockHashPassword.ReturnArguments.Get(0).(string)
 	user.Password = hashedPass
 
-	mockRegisterUser := userRepository.Mock.On("RegisterUser", ctx, user).Return(&model.User{
+	mockRegisterUser := UserRepository.Mock.On("RegisterUser", ctx, user).Return(&model.User{
 		ID:        user.ID,
 		Email:     user.Email,
 		FirstName: user.FirstName,
@@ -52,17 +45,17 @@ func TestRegisterUserUseCase(t *testing.T) {
 		Type:      user.Type,
 	}, nil).ReturnArguments.Get(0).(*model.User)
 
-	mockGenerateAccessToken := tokenManager.Mock.On("GenerateAccessToken", ctx, *user).Return(
+	mockGenerateAccessToken := TokenManager.Mock.On("GenerateAccessToken", ctx, *user).Return(
 		"mockAccessTokenHere", nil,
 	).ReturnArguments.Get(0).(string)
 
-	mockGenerateRefreshToken := tokenManager.Mock.On("GenerateRefreshToken", ctx, *user).Return(
+	mockGenerateRefreshToken := TokenManager.Mock.On("GenerateRefreshToken", ctx, *user).Return(
 		"mockRefreshTokenHere", nil,
 	).ReturnArguments.Get(0).(string)
 
-	authRepository.Mock.On("AddRefreshToken", ctx, mockGenerateRefreshToken).Return(nil)
+	AuthRepository.Mock.On("AddRefreshToken", ctx, mockGenerateRefreshToken).Return(nil)
 
-	registerUserUseCase := use_case.NewRegisterUserUsecase(authRepository, userRepository, securityManager, tokenManager)
+	registerUserUseCase := use_case.NewRegisterUserUsecase(AuthRepository, UserRepository, SecurityManager, TokenManager)
 
 	actualRes, _ := registerUserUseCase.Execute(ctx, req)
 	expectedRes := &use_case.RegisterUserResponse{
@@ -78,12 +71,12 @@ func TestRegisterUserUseCase(t *testing.T) {
 	}
 
 	assert.NoError(t, validateFieldsErr, "valid fields should not throw error")
-	userRepository.Mock.AssertCalled(t, "CheckEmailAvailability", ctx, req.Email)
-	securityManager.Mock.AssertCalled(t, "GenerateID", ctx)
-	securityManager.Mock.AssertCalled(t, "HashPassword", ctx, req.Password)
-	userRepository.Mock.AssertCalled(t, "RegisterUser", ctx, user)
-	tokenManager.Mock.AssertCalled(t, "GenerateAccessToken", ctx, *user)
-	tokenManager.Mock.AssertCalled(t, "GenerateRefreshToken", ctx, *user)
-	authRepository.Mock.AssertCalled(t, "AddRefreshToken", ctx, mockGenerateRefreshToken)
+	UserRepository.Mock.AssertCalled(t, "CheckEmailAvailability", ctx, req.Email)
+	SecurityManager.Mock.AssertCalled(t, "GenerateID", ctx)
+	SecurityManager.Mock.AssertCalled(t, "HashPassword", ctx, req.Password)
+	UserRepository.Mock.AssertCalled(t, "RegisterUser", ctx, user)
+	TokenManager.Mock.AssertCalled(t, "GenerateAccessToken", ctx, *user)
+	TokenManager.Mock.AssertCalled(t, "GenerateRefreshToken", ctx, *user)
+	AuthRepository.Mock.AssertCalled(t, "AddRefreshToken", ctx, mockGenerateRefreshToken)
 	assert.Equal(t, expectedRes, actualRes)
 }
