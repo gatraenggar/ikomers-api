@@ -10,12 +10,12 @@ import (
 )
 
 func TestSecurityManager(t *testing.T) {
-	tableHelper := db_test.NewUserTableTestHelper()
+	userTableHelper := db_test.NewUserTableTestHelper()
 
 	t.Run("generate id", func(t *testing.T) {
 		ctx := context.Background()
 
-		secManager := security.NewSecurityManager(tableHelper.DB)
+		secManager := security.NewSecurityManager(userTableHelper.DB)
 		id1, err1 := secManager.GenerateID(ctx)
 		id2, err2 := secManager.GenerateID(ctx)
 
@@ -30,10 +30,27 @@ func TestSecurityManager(t *testing.T) {
 		ctx := context.Background()
 		password := "SomePasswordHere"
 
-		secManager := security.NewSecurityManager(tableHelper.DB)
+		secManager := security.NewSecurityManager(userTableHelper.DB)
 		hashed, err := secManager.HashPassword(ctx, password)
 
 		assert.NoError(t, err)
 		assert.NotEqual(t, hashed, password)
+	})
+
+	t.Run("compare hash and password", func(t *testing.T) {
+		ctx := context.Background()
+
+		secManager := security.NewSecurityManager(userTableHelper.DB)
+
+		password := "SomePasswordHere"
+		hashed, err := secManager.HashPassword(ctx, password)
+		if err != nil {
+			t.Fatalf("hash password fatal: %v", err)
+		}
+
+		err = secManager.CompareHashAndPassword(ctx, password, hashed)
+
+		assert.NotEqual(t, password, hashed)
+		assert.NoError(t, err)
 	})
 }

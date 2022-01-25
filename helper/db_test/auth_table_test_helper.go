@@ -48,7 +48,7 @@ func (t *authTableTestHelper) CleanTable() {
 	t.DB.Exec("DELETE FROM auths WHERE 1=1")
 }
 
-func AuthTableTestHelper() *authTableTestHelper {
+func NewAuthTableTestHelper() *authTableTestHelper {
 	db, err := database.NewDB()
 	if err != nil {
 		log.Fatalf(err.Error())
