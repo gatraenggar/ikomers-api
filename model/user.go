@@ -53,5 +53,7 @@ func (u *User) ValidateFields() error {
 
 type UserRepository interface {
 	CheckEmailAvailability(ctx context.Context, email string) error
+	GetSingleUser(ctx context.Context, user *User) (*User, error)
 	RegisterUser(ctx context.Context, user *User) (*User, error)
+	GetPasswordByEmail(ctx context.Context, email string) (string, error)
 }

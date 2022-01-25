@@ -24,6 +24,9 @@ var UserType = graphql.NewObject(
 			"type": &graphql.Field{
 				Type: graphql.Int,
 			},
+			"auth_token": &graphql.Field{
+				Type: AuthTokenType,
+			},
 		},
 	},
 )

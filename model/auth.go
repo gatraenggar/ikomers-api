@@ -5,8 +5,8 @@ import (
 )
 
 type Auth struct {
-	AccessToken  string
-	RefreshToken string
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
 }
 
 type AuthRepository interface {

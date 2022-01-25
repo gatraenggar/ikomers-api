@@ -11,7 +11,7 @@ import (
 )
 
 func TestAuthRepository(t *testing.T) {
-	tableHelper := db_test.AuthTableTestHelper()
+	tableHelper := db_test.NewAuthTableTestHelper()
 
 	newDB, err := database.NewDB()
 	if err != nil {

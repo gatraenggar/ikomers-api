@@ -27,3 +27,12 @@ func (repo *SecurityManagerMock) HashPassword(ctx context.Context, password stri
 
 	return arguments.Get(0).(string), arguments.Get(1).(error)
 }
+
+func (repo *SecurityManagerMock) CompareHashAndPassword(ctx context.Context, password string, hashed string) error {
+	arguments := repo.Mock.Called(ctx, password, hashed)
+	if arguments.Get(0) != nil {
+		return arguments.Get(0).(error)
+	}
+
+	return nil
+}

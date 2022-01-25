@@ -39,3 +39,12 @@ func (m *securityManager) HashPassword(ctx context.Context, password string) (st
 
 	return string(hashed), nil
 }
+
+func (m *securityManager) CompareHashAndPassword(ctx context.Context, password string, hashed string) error {
+	err := bcrypt.CompareHashAndPassword([]byte(hashed), []byte(password))
+	if err != nil {
+		return errors.New("wrong password or account not existed")
+	}
+
+	return nil
+}
