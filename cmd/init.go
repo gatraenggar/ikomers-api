@@ -15,7 +15,7 @@ func InitServer() {
 
 	switch args[1] {
 	case "migrate":
-		fmt.Println("Migrating the database")
+		fmt.Println("Oops.. migrating the database has not set-up")
 
 	case "migrate_test":
 		fmt.Println("Migrating the testing database...")
